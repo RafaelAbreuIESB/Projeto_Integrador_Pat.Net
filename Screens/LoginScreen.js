@@ -1,79 +1,65 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase'; // ajuste o caminho conforme seu projeto
+import { View, Text, TextInput, Button, StyleSheet, Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleLogin = async () => {
-    if (email === '' || senha === '') {
-      Alert.alert('Erro', 'Preencha todos os campos!');
-      return;
-    }
-
-    try {
-      await signInWithEmailAndPassword(auth, email, senha);
-      Alert.alert('Sucesso', 'Login realizado!');
-      navigation.navigate('Home'); // ou sua tela principal
-    } catch (error) {
-      console.log(error);
-      Alert.alert('Erro', 'Email ou senha inválidos!');
-    }
+  const handleLogin = () => {
+    navigation.navigate('Home');
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
-
       <TextInput
         style={styles.input}
-        placeholder="E-mail"
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
       />
-
       <TextInput
         style={styles.input}
         placeholder="Senha"
         secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
+        value={password}
+        onChangeText={setPassword}
       />
-
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Entrar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.link}>Não tem conta? Cadastre-se</Text>
-      </TouchableOpacity>
+      <Button title="Entrar" onPress={handleLogin} />
+      <Text style={styles.link} onPress={() => navigation.navigate('Register')}>
+        Criar conta
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, backgroundColor: '#f2f2f2', padding: 20, justifyContent: 'center',
+    flex: 1,
+    padding: width * 0.1,
+    justifyContent: 'center',
+    backgroundColor: '#f2f2f2',
   },
   title: {
-    fontSize: 26, marginBottom: 24, textAlign: 'center', fontWeight: 'bold',
+    fontSize: width * 0.08,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
   },
   input: {
-    backgroundColor: '#fff', padding: 12, borderRadius: 8,
-    marginBottom: 12, fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#4A90E2', padding: 14, borderRadius: 8,
-    alignItems: 'center', marginTop: 12,
-  },
-  buttonText: {
-    color: '#fff', fontSize: 16, fontWeight: 'bold',
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff'
   },
   link: {
-    marginTop: 16, textAlign: 'center', color: '#4A90E2', fontSize: 15,
-  },
+    marginTop: 20,
+    color: '#007bff',
+    textAlign: 'center'
+  }
 });

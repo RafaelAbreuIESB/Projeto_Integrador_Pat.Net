@@ -1,93 +1,93 @@
+// Screens/RegisterScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase'; // ajuste o caminho conforme sua estrutura
+import { View, Text, TextInput, Button, StyleSheet, Dimensions, Alert } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-  const handleRegister = async () => {
-    if (!email || !senha || !confirmarSenha) {
-      Alert.alert('Erro', 'Preencha todos os campos!');
+  const isPasswordStrong = (password) => {
+    const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{8,}$/;
+    return regex.test(password);
+  };
+
+  const handleRegister = () => {
+    if (password !== confirmPassword) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
       return;
     }
 
-    if (senha !== confirmarSenha) {
-      Alert.alert('Erro', 'As senhas não coincidem!');
+    if (!isPasswordStrong(password)) {
+      Alert.alert(
+        'Senha fraca',
+        'A senha deve ter no mínimo 8 caracteres, incluindo 1 letra maiúscula, 1 número e 1 caractere especial.'
+      );
       return;
     }
 
-    try {
-      await createUserWithEmailAndPassword(auth, email, senha);
-      Alert.alert('Sucesso', 'Usuário cadastrado com sucesso!');
-      navigation.navigate('Login');
-    } catch (error) {
-      console.log(error);
-      Alert.alert('Erro', 'Não foi possível cadastrar o usuário.');
-    }
+    // Lógica de cadastro com Firebase ou outro backend
+    navigation.navigate('Login');
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Cadastro</Text>
-
       <TextInput
         style={styles.input}
-        placeholder="E-mail"
-        keyboardType="email-address"
-        autoCapitalize="none"
+        placeholder="Email"
         value={email}
         onChangeText={setEmail}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Senha"
         secureTextEntry
-        value={senha}
-        onChangeText={setSenha}
+        value={password}
+        onChangeText={setPassword}
       />
-
       <TextInput
         style={styles.input}
         placeholder="Confirmar Senha"
         secureTextEntry
-        value={confirmarSenha}
-        onChangeText={setConfirmarSenha}
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
       />
-
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-        <Text style={styles.link}>Já tem conta? Entrar</Text>
-      </TouchableOpacity>
+      <Button title="Cadastrar" onPress={handleRegister} />
+      <Text style={styles.link} onPress={() => navigation.navigate('Login')}>
+        Voltar para o login
+      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, backgroundColor: '#f2f2f2', padding: 20, justifyContent: 'center',
+    flex: 1,
+    padding: width * 0.1,
+    justifyContent: 'center',
+    backgroundColor: '#f2f2f2',
   },
   title: {
-    fontSize: 26, marginBottom: 24, textAlign: 'center', fontWeight: 'bold',
+    fontSize: width * 0.08,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
   },
   input: {
-    backgroundColor: '#fff', padding: 12, borderRadius: 8,
-    marginBottom: 12, fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#4A90E2', padding: 14, borderRadius: 8,
-    alignItems: 'center', marginTop: 12,
-  },
-  buttonText: {
-    color: '#fff', fontSize: 16, fontWeight: 'bold',
+    height: 50,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    backgroundColor: '#fff'
   },
   link: {
-    marginTop: 16, textAlign: 'center', color: '#4A90E2', fontSize: 15,
-  },
+    marginTop: 20,
+    color: '#007bff',
+    textAlign: 'center'
+  }
 });

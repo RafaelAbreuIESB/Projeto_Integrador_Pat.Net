@@ -1,42 +1,27 @@
 import React, { useLayoutEffect } from 'react';
-import { View, Text, Button, Alert, StyleSheet } from 'react-native';
-import { getAuth, signOut } from 'firebase/auth';
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
 
-export default function HomeScreen() {
-  const navigation = useNavigation();
-  const auth = getAuth();
+const { width, height } = Dimensions.get('window');
 
+export default function HomeScreen({ navigation }) {
   const handleLogout = () => {
-    Alert.alert(
-      'Sair',
-      'Você realmente deseja sair?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Sair',
-          onPress: () => {
-            signOut(auth)
-              .then(() => navigation.replace('Login'))
-              .catch(error => console.error('Erro ao sair:', error.message));
-          },
-          style: 'destructive',
-        },
-      ]
-    );
+    navigation.replace('Login');
   };
 
+  // Colocar o botão de sair no cabeçalho
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button onPress={handleLogout} title="Sair" color="#FF3B30" />
+        <TouchableOpacity onPress={handleLogout} style={styles.headerButton}>
+          <Text style={styles.headerButtonText}>Sair</Text>
+        </TouchableOpacity>
       ),
     });
   }, [navigation]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bem-vindo à Home!</Text>
+      <Text style={styles.welcome}>Bem-vindo à Home!</Text>
     </View>
   );
 }
@@ -44,11 +29,23 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: width * 0.05,
+    backgroundColor: '#f2f2f2',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F2F2F2',
   },
-  title: {
-    fontSize: 24,
+  headerButton: {
+    marginRight: 15,
+    backgroundColor: '#ff4d4d',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+  },
+  headerButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  welcome: {
+    fontSize: width * 0.06,
+    textAlign: 'center',
   },
 });
