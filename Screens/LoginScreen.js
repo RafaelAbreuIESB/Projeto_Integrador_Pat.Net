@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Dimensions, Alert } from 'react-native';
+import { auth } from '../firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    navigation.navigate('Home');
+  const handleLogin = async () => {
+    if (!email || !password) {
+      Alert.alert('Campos vazios', 'Por favor, preencha todos os campos.');
+      return;
+    }
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log('Login bem-sucedido:', user.email);
+      navigation.navigate('Home');
+    } catch (error) {
+      console.error('Erro ao fazer login:', error.message);
+      Alert.alert('Erro de Login', 'E-mail ou senha inválidos. Tente novamente.');
+    }
   };
 
   return (
@@ -19,6 +34,8 @@ export default function LoginScreen({ navigation }) {
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}

@@ -1,45 +1,87 @@
-// Screens/RegisterScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Dimensions, Alert } from 'react-native';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  const isPasswordStrong = (password) => {
-    const regex = /^(?=.*[A-Z])(?=.*[!@#$&*])(?=.*[0-9]).{8,}$/;
-    return regex.test(password);
-  };
+  const handleRegister = async () => {
+    const errors = [];
 
-  const handleRegister = () => {
+    const uppercaseRegex = /[A-Z]/;
+    const numberRegex = /[0-9]/;
+    const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+    const lowercaseRegex = /[a-z]/;
+
+
+    if (!email || !password || !confirmPassword) {
+      errors.push('Preencha todos os campos.');
+    }
+
+    if (password.length < 8) {
+      errors.push('A senha deve ter pelo menos 8 caracteres.');
+    }
+
+    if (!uppercaseRegex.test(password)) {
+      errors.push('A senha deve conter pelo menos uma letra maiúscula.');
+    }
+
+    if (!numberRegex.test(password)) {
+      errors.push('A senha deve conter pelo menos um número.');
+    }
+
+    if (!specialCharRegex.test(password)) {
+      errors.push('A senha deve conter pelo menos um caractere especial.');
+    }
+
     if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem.');
+      errors.push('As senhas não coincidem.');
+    }
+
+    if (errors.length > 0) {
+      Alert.alert('Erro no Registro', errors.join('\n'));
       return;
     }
 
-    if (!isPasswordStrong(password)) {
-      Alert.alert(
-        'Senha fraca',
-        'A senha deve ter no mínimo 8 caracteres, incluindo 1 letra maiúscula, 1 número e 1 caractere especial.'
-      );
-      return;
+    if (!lowercaseRegex.test(password)){
+      errors.push("A senha deve ter pelo menos uma letra minúscula")
     }
 
-    // Lógica de cadastro com Firebase ou outro backend
-    navigation.navigate('Login');
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      if (user) {
+        Alert.alert('Sucesso', 'Conta criada com sucesso!');
+        navigation.navigate('Login');
+      }
+    } catch (error) {
+      console.error('Erro no registro:', error.message);
+      let msg = 'Erro ao criar conta.';
+      if (error.code === 'auth/email-already-in-use') {
+        msg = 'Este e-mail já está em uso.';
+      } else if (error.code === 'auth/invalid-email') {
+        msg = 'E-mail inválido.';
+      }
+      Alert.alert('Erro', msg);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Cadastro</Text>
+      <Text style={styles.title}>Criar Conta</Text>
       <TextInput
         style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -55,9 +97,9 @@ export default function RegisterScreen({ navigation }) {
         value={confirmPassword}
         onChangeText={setConfirmPassword}
       />
-      <Button title="Cadastrar" onPress={handleRegister} />
+      <Button title="Registrar" onPress={handleRegister} />
       <Text style={styles.link} onPress={() => navigation.navigate('Login')}>
-        Voltar para o login
+        Já tem conta? Faça login
       </Text>
     </View>
   );

@@ -1,11 +1,26 @@
 import React, { useLayoutEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
   const handleLogout = () => {
-    navigation.replace('Login');
+    Alert.alert(
+      'Tem certeza?',
+      'Você realmente deseja sair?',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Sair',
+          onPress: () => navigation.replace('Login'),
+          style: 'destructive',
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   // Colocar o botão de sair no cabeçalho
