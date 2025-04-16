@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Dimensions, Alert } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Dimensions, Alert, TouchableOpacity } from 'react-native';
 import { auth } from '../firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 
@@ -44,10 +44,15 @@ export default function LoginScreen({ navigation }) {
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Entrar" onPress={handleLogin} />
-      <Text style={styles.link} onPress={() => navigation.navigate('Register')}>
-        Criar conta
-      </Text>
+      <TouchableOpacity >
+      <Text style={styles.Button} onPress={handleLogin}>
+          Entrar
+        </Text>
+        <Text style={styles.Button} onPress={() => navigation.navigate('Register')}>
+          Criar conta
+        </Text>
+      </TouchableOpacity>  
+      
     </View>
   );
 }
@@ -64,6 +69,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 30,
     textAlign: 'center',
+    
   },
   input: {
     height: 50,
@@ -78,5 +84,16 @@ const styles = StyleSheet.create({
     marginTop: 20,
     color: '#007bff',
     textAlign: 'center'
-  }
+  },
+  Button:{
+    backgroundColor: "#32ea63",
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    marginHorizontal: 30,
+    borderRadius: 20,
+    alignItems: "center",
+    marginTop: 10,
+    textAlign:"center",
+  },
+  
 });
