@@ -1,7 +1,7 @@
 import React, { useLayoutEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Alert } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation }) {
   const handleLogout = () => {
